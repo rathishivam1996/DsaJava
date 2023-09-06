@@ -2,7 +2,7 @@ package org.example;
 
 
 public class LinkedListGfg {
-    class Node {
+    static class Node {
         int data;
         Node next;
         Node prev;
@@ -11,25 +11,37 @@ public class LinkedListGfg {
             this.data = data;
             this.next = null;
         }
-
-        @Override
-        public String toString() {
-            return "Node{" +
-                    "data=" + data +
-                    ", next=" + next != null ? next.data + " " : "null" +
-                    ", next=" + prev != null ? prev.data + " " : "null" +
-                    '}';
-        }
+//
+//        @Override
+//        public String toString() {
+//            return "Node{" +
+//                    "data=" + data +
+//                    ", next=" + next != null ? next.data + " " : "null" +
+//                    ", next=" + prev != null ? prev.data + " " : "null" +
+//                    '}';
+//        }
     }
 
     public static void main(String[] args) {
         LinkedListGfg list = new LinkedListGfg();
-//        list.addNode(1);
-//        list.addNode(2);
-//        list.addNode(3);
-//        list.addNode(4);
-//        list.addNode(5);
+        list.addNode(1);
+        list.addNode(2);
+        list.addNode(3);
+        list.addNode(4);
+        list.addNode(5);
+
+        Node root = new Node(1);
+        Node r1 = new Node(2);
+        Node r2 = new Node(3);
+        Node r3 = new Node(4);
+
+        root.next = r1;
+        r1.next = r2;
+        r2.next = r3;
+        r3.next = r1;
+
         System.out.println("mid point of linked list: " + list.midPoint(head));
+        System.out.println("Linked list has cycle?: " + hasCycle(root));
     }
 
     //Represent the head and tail of the singly linked list
@@ -98,5 +110,15 @@ public class LinkedListGfg {
 //        }
 //    }
 
+    public static boolean hasCycle(Node root) {
+        Node slow = root;
+        Node fast = root;
 
+        while (slow != null && fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) return true;
+        }
+        return false;
+    }
 }
