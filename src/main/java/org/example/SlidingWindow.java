@@ -7,14 +7,12 @@ public class SlidingWindow {
 
     public static void main(String[] args) {
         int[] arr = new int[]{3, 3, -1, -3, 5, 3, 6, 7};
-        System.out.println("Max in each window of size K: " + Arrays.toString(maxSlidingWindow(arr, 3, 0, arr.length - 1)));
+        System.out.println("Max in each window of size K: " + Arrays.toString(maxInEachSlidingWindow(arr, 3, 0, arr.length - 1)));
         System.out.println("Max substring with unique char: " + lengthOfLongestSubstring("acbdbefgh"));
         System.out.println("Max substring with unique char: " + lengthOfLongestSubstring1("acbdbefgh"));
-        System.out.println("Is Valid parentheses: " + isValidParentheses("()"));
-        System.out.println("max diff b/w two elements in arr: " + maxDiffArray(new int[]{7, 8}));
     }
 
-    public static int[] maxSlidingWindow(int[] arr, int k, int si, int ei) {
+    public static int[] maxInEachSlidingWindow(int[] arr, int k, int si, int ei) {
         List<Integer> res = new ArrayList<>();
         Deque<Integer> dq = new LinkedList<>();
         int i = 0;
@@ -96,34 +94,40 @@ public class SlidingWindow {
         return max;
     }
 
-    public static boolean isValidParentheses(String str) {
-        Stack<Character> stack = new Stack<>();
-        HashMap<Character, Character> map = new HashMap<>();
-        map.put(')', '(');
-        map.put(']', '[');
-        map.put('}', '{');
-        for (int i = 0; i < str.length(); i++) {
-            char curr = str.charAt(i);
-            if (curr == '[' || curr == '(' || curr == '{') {
-                stack.push(curr);
-            } else if (stack.isEmpty() || stack.pop() != map.get(curr))
-                return false;
+    public static int minWindowWithSum(int[] arr, int target) {
+        int minWindow = Integer.MAX_VALUE;
+        int currSum = 0;
+        int left = 0;
+        int right = 0;
+        while (left <= right && right < arr.length) {
+            currSum += arr[right];
+            while (currSum >= target && left <= right) {
+                currSum -= arr[left];
+                left++;
+            }
+            if (currSum == target) {
+                minWindow = Math.min(minWindow, right - left + 1);
+            }
+            right++;
         }
-        return stack.isEmpty();
+        return minWindow == Integer.MAX_VALUE ? 0 : minWindow;
     }
 
-    // https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/
-    // O(n), O(1)
-    public static int maxDiffArray(int[] arr) {
-        if (arr.length <= 1) return 0;
-        int maxDiff = 0;
-        int minElem = arr[0];
-        for (int i = 1; i < arr.length; i++) {
-            if (arr[i] >= minElem) maxDiff = Math.max(maxDiff, arr[i] - minElem);
-            minElem = Math.min(minElem, arr[i]);
+    public static int minWindowWithSumEqualOrGreater(int[] arr, int target) {
+        int minWindow = Integer.MAX_VALUE;
+        int currSum = 0;
+        int left = 0;
+        int right = 0;
+        while (left <= right && right < arr.length) {
+            currSum += arr[right];
+            while (currSum >= target && left <= right) {
+                minWindow = Math.min(minWindow, right - left + 1);
+                currSum -= arr[left];
+                left++;
+            }
+            right++;
         }
-        return maxDiff;
+        return minWindow == Integer.MAX_VALUE ? 0 : minWindow;
     }
-
 }
 

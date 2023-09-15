@@ -1,9 +1,6 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ArrayGfg {
     public static void main(String[] args) {
@@ -26,15 +23,67 @@ public class ArrayGfg {
         int[] arrRotated = new int[]{1, 2, 3, 0};
         System.out.println("binary search rotated array: " + binarySearchRotated(arrRotated, 2));
 
+        System.out.println("Sum pair sorted array: " + Arrays.toString(sumPairSorted(new int[]{2, -1}, 1)));
+
         System.out.println("Binary search linearly sorted matrix: " + searchLinearlySortedMatrix(new int[][]{{1, 2, 3}}, 3));
 
         System.out.println("Binary search linearly sorted matrix: " + searchLinearlySortedMatrix1(new int[][]{{1, 2, 3}}, 3));
+
+        System.out.println("max diff b/w two elements in arr: " + maxDiffArray(new int[]{7, 8}));
+
+        int[][] rowColSortedMatrix = {{10, 20, 30, 40}, {15, 25, 35, 45}, {27, 29, 37, 48}, {32, 33, 39, 50}};
+        System.out.println("min window with sum: " + searchSortedMatrixRowCol(rowColSortedMatrix, 29));
+
+        System.out.println("Find missing num in range 0 to n: " + findMissingNum(new int[]{2, 1, 3}));
+        System.out.println("Find missing num in range 0 to n space optimised: " + findMissingNumSpaceOptimized(new int[]{2, 1, 3}));
 
 //        System.out.println("Binary search rotated array with repeated elements: " + binarySearchRotatedRepeatedElem(new int[]{2, 5, 6, 0, 0, 1, 2}, 5));
 
         System.out.println("Find pivot sorted rotated duplicates: " + findPivotIndexSortedRotatedDuplicate(new int[]{1, 1, 1, 1, 1, 2, 1, 1, 1}));
 
         System.out.println("Binary search sorted rotated duplicates: " + binarySearchSortedRotatedDuplicate(new int[]{1, 1, 1, 1, 1, 2, 1, 1, 1}, 1));
+
+        int[] dutchFlagArr = {0, 1, 0, 2, 1, 0, 2};
+        dutchFlagProblem(dutchFlagArr);
+        System.out.println("sort array of 0, 1, 2 in O(n) Dutch flag problem: " + Arrays.toString(dutchFlagArr));
+
+        System.out.println("H index: " + hIndex(new int[]{0, 1, 3, 5, 6}));
+
+        System.out.println("duplicate num: " + findDuplicate(new int[]{1, 2, 4, 3, 2}));
+    }
+
+    // sort arr of 0, 1, 2 in O(N)
+    public static void dutchFlagProblem(int[] arr) {
+        int low = 0;
+        int high = arr.length - 1;
+        int mid = 0;
+        while (low <= high && mid <= high) {
+            if (arr[mid] == 0) { // swap with low
+                int temp = arr[low];
+                arr[low] = arr[mid];
+                arr[mid] = temp;
+                low++;
+                mid++;
+            } else if (arr[mid] == 1) { // skip
+                mid++;
+            } else if (arr[mid] == 2) { // swap with high
+                int temp = arr[high];
+                arr[high] = arr[mid];
+                arr[mid] = temp;
+                high--;
+            }
+        }
+    }
+
+//    public static void merge(int[] arr, int)
+
+    public static void mergeSort(int[] arr, int si, int ei) {
+        if (si > ei) return;
+        int mid = si + (ei - si) / 2;
+
+        mergeSort(arr, 0, mid);
+        mergeSort(arr, mid + 1, ei);
+
     }
 
     public static int candies(int[] students) {
@@ -119,6 +168,175 @@ public class ArrayGfg {
             }
         }
         return res;
+    }
+
+    // https://leetcode.com/problems/h-index-ii/
+    public static int hIndex(int[] arr) {
+        int si = 0;
+        int ei = arr.length - 1;
+        int hIndex = -1;
+        while (si <= ei) {
+            int mid = si + (ei - si) / 2;
+            int numC = arr.length - mid;
+            if (arr[mid] >= numC) {
+                hIndex = numC;
+                ei = mid - 1;
+            } else {
+                si = mid + 1;
+            }
+        }
+        return hIndex;
+    }
+
+    public static int[] sumPairSorted(int[] arr, int sum) {
+        if (arr.length < 2) return null;
+
+        for (int i = 0; i < arr.length; i++) {
+            int curr = arr[i];
+            int rest = sum - curr;
+            int indx2 = binarySearch(arr, i + 1, arr.length - 1, rest);
+            if (indx2 != -1) {
+                return new int[]{i + 1, indx2 + 1};
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    // https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/
+    // O(n), O(1)
+    public static int maxDiffArray(int[] arr) {
+        if (arr.length <= 1) return 0;
+        int maxDiff = 0;
+        int minElem = arr[0];
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] >= minElem) maxDiff = Math.max(maxDiff, arr[i] - minElem);
+            minElem = Math.min(minElem, arr[i]);
+        }
+        return maxDiff;
+    }
+
+    // https://leetcode.com/problems/first-bad-version/
+    public static boolean randBool(int version) {
+        return new Random().nextBoolean();
+    }
+
+    public static int firstBad(int[] arr) {
+        int si = 0;
+        int ei = arr.length - 1;
+        int firstBad = -1;
+        while (si <= ei) {
+            int mid = si + (ei - si) / 2;
+            if (randBool(arr[mid])) {
+                firstBad = mid;
+                ei = mid - 1;
+            } else {
+                si = mid + 1;
+            }
+        }
+        return firstBad;
+    }
+
+    // https://leetcode.com/problems/find-the-duplicate-number/
+    // at most one num is duplicate
+    // wrong sol fail = [2,2,2,2,2,2]
+    public static int findDuplicate(int[] arr) {
+        int n = arr.length - 1;
+
+        int expectedSum = (n * (n + 1)) / 2;
+        int actualSum = 0;
+        for (int num : arr) {
+            actualSum += num;
+        }
+        return actualSum - expectedSum;
+    }
+
+    // O(m * lon(n))
+    public static boolean searchLinearlySortedMatrix(int[][] mat, int k) {
+        int row = -1;
+
+        for (int i = 0; i < mat.length; i++) {
+            int colSi = 0;
+            int colEi = mat[i].length - 1;
+
+            if (k >= mat[i][colSi] && k <= mat[i][colEi]) {
+                row = i;
+                break;
+            }
+        }
+
+        if (row == -1) return false;
+        int idx = binarySearch(mat[row], 0, mat[row].length, k);
+
+        return idx != -1;
+    }
+
+    // O(log(m * n))
+    public static boolean searchLinearlySortedMatrix1(int[][] mat, int k) {
+        if (mat.length == 0) return false;
+
+        int si = 0;
+        int ei = mat.length * mat[0].length - 1;
+
+        while (si <= ei) {
+            int mid = si + (ei - si) / 2;
+
+            int r = mid / mat[0].length;
+            int c = mid % mat[0].length;
+
+            if (k == mat[r][c]) return true;
+            else if (k < mat[r][c]) {
+                ei = mid - 1;
+            } else {
+                si = mid + 1;
+            }
+        }
+        return false;
+    }
+
+    public static boolean searchSortedMatrixRowCol(int[][] arr, int target) {
+        int midX = 0;
+        int midY = arr[0].length - 1;
+
+        while (midY >= 0 && midX < arr.length) {
+            if (arr[midX][midY] == target) return true;
+            else if (target < arr[midX][midY]) {
+                midY--;
+            } else {
+                midX++;
+            }
+        }
+        return false;
+    }
+
+    // https://leetcode.com/problems/missing-number/description/
+    // T.C=O(n), SC=O(n)
+    public static int findMissingNum(int[] arr) {
+        int n = arr.length;
+        HashSet<Integer> set = new HashSet<>();
+        for (int num : arr) {
+            set.add(num);
+        }
+
+        for (int i = 0; i <= n; i++) {
+            if (!set.contains(i)) return i;
+        }
+        return -1;
+    }
+
+    public static int findMissingNumSpaceOptimized(int[] nums) {
+        int n = nums.length;
+
+        int expectedSum = 0;
+        int actualSum = 0;
+        for (int i = 0; i <= n; i++) {
+            expectedSum += i;
+        }
+
+        for (int num : nums) {
+            actualSum += num;
+        }
+
+        return Math.abs(expectedSum - actualSum);
     }
 
     public static int binarySearchRotated(int[] arr, int target) {
@@ -237,48 +455,4 @@ public class ArrayGfg {
         }
         return left;
     }
-
-    // O(m * lon(n))
-    public static boolean searchLinearlySortedMatrix(int[][] mat, int k) {
-        int row = -1;
-
-        for (int i = 0; i < mat.length; i++) {
-            int colSi = 0;
-            int colEi = mat[i].length - 1;
-
-            if (k >= mat[i][colSi] && k <= mat[i][colEi]) {
-                row = i;
-                break;
-            }
-        }
-
-        if (row == -1) return false;
-        int idx = binarySearch(mat[row], 0, mat[row].length, k);
-
-        return idx != -1;
-    }
-
-    // O(log(m * n))
-    public static boolean searchLinearlySortedMatrix1(int[][] mat, int k) {
-        if (mat.length == 0) return false;
-
-        int si = 0;
-        int ei = mat.length * mat[0].length - 1;
-
-        while (si <= ei) {
-            int mid = si + (ei - si) / 2;
-
-            int r = mid / mat[0].length;
-            int c = mid % mat[0].length;
-
-            if (k == mat[r][c]) return true;
-            else if (k < mat[r][c]) {
-                ei = mid - 1;
-            } else {
-                si = mid + 1;
-            }
-        }
-        return false;
-    }
-
 }

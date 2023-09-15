@@ -106,6 +106,14 @@ public class Tree<T> {
         inorder(node.right);
     }
 
+    public void inorder(Node<T> node, List<Node<T>> inorder) {
+        if (node == null) return;
+
+        inorder(node.left);
+        inorder.add(node);
+        inorder(node.right);
+    }
+
     public List<T> inorderIterative(Node<T> root) {
         if (root == null) return null;
 
@@ -142,20 +150,6 @@ public class Tree<T> {
         return rv;
     }
 
-    public List<T> levelOrder(Node<T> root) {
-        if (root == null) return null;
-        List<T> rv = new ArrayList<>();
-
-        LinkedList<Node<T>> list = new LinkedList<>();
-        list.add(root);
-        while (!list.isEmpty()) {
-            Node<T> curr = list.removeFirst();
-            if (curr.left != null) list.addLast(curr.left);
-            if (curr.right != null) list.addLast(curr.right);
-            rv.add(curr.data);
-        }
-        return rv;
-    }
 
     public List<T> postOrderIterative(Node<T> root) {
         if (root == null) return null;
@@ -176,10 +170,68 @@ public class Tree<T> {
         return rv;
     }
 
+    public List<List<T>> levelOrder(Node<T> root) {
+        if (root == null) return null;
+        List<List<T>> rv = new ArrayList<>();
+
+        LinkedList<Node<T>> currLevel = new LinkedList<>();
+        LinkedList<Node<T>> nextLevel = new LinkedList<>();
+        List<T> currResult = new ArrayList<>();
+        currLevel.add(root);
+        while (!currLevel.isEmpty()) {
+            Node<T> curr = currLevel.removeFirst();
+            if (curr.left != null) nextLevel.addLast(curr.left);
+            if (curr.right != null) nextLevel.addLast(curr.right);
+            currResult.add(curr.data);
+            if (currLevel.isEmpty()) {
+                rv.add(currResult);
+                currResult = new ArrayList<>();
+                LinkedList<Node<T>> temp = nextLevel;
+                nextLevel = currLevel;
+                currLevel = temp;
+            }
+        }
+        return rv;
+    }
+
     public int height(Node<T> root) {
         if (root == null) return 0;
         int lh = height(root.left) + 1;
         int rh = height(root.right) + 1;
         return Math.max(lh, rh);
+    }
+
+    public boolean isSame(Node<T> r1, Node<T> r2) {
+        if (r1 == null && r2 == null) return true;
+        if (r1 == null || r2 == null) return false;
+        return r1.data == r2.data
+                && isSame(r1.left, r2.left)
+                && isSame(r1.right, r2.right);
+    }
+
+    public Node<T> invertTree(Node<T> root) {
+        if (root == null) return null;
+        invertTree(root.left);
+        invertTree(root.right);
+
+        Node<T> temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+
+        return root;
+    }
+
+    public boolean isSymmetric(Node<T> root) {
+        if (root == null) return true;
+        return isSame(root.left, root.right);
+    }
+
+    public boolean isMirror(Node<T> r1, Node<T> r2) {
+        if (r1 == null && r2 == null) return true;
+        if (r1 == null || r2 == null) return false;
+
+        return r1.data == r2.data
+                && isMirror(r1.left, r2.right)
+                && isMirror(r1.right, r2.left);
     }
 }

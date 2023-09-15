@@ -1,6 +1,7 @@
 package org.example;
 
 import java.security.PublicKey;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -9,6 +10,8 @@ public class StackGfg {
 //        System.out.println(infixToPrefix("a+b*c-d/e"));
         Node node = infixToExpressionTree("a+b*c-d/e");
         levelOrder(node);
+
+        System.out.println("Is Valid parentheses: " + isValidParentheses("()"));
     }
 
     public static String infixToPostFix(String infix) {
@@ -195,5 +198,21 @@ public class StackGfg {
             if (curr.right != null) list.addLast(curr.right);
             System.out.print(curr.data + " =>");
         }
+    }
+
+    public static boolean isValidParentheses(String str) {
+        Stack<Character> stack = new Stack<>();
+        HashMap<Character, Character> map = new HashMap<>();
+        map.put(')', '(');
+        map.put(']', '[');
+        map.put('}', '{');
+        for (int i = 0; i < str.length(); i++) {
+            char curr = str.charAt(i);
+            if (curr == '[' || curr == '(' || curr == '{') {
+                stack.push(curr);
+            } else if (stack.isEmpty() || stack.pop() != map.get(curr))
+                return false;
+        }
+        return stack.isEmpty();
     }
 }
